@@ -1,0 +1,180 @@
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
+import  matplotlib.pyplot as plt
+import numpy as mp
+from sortMap import map
+
+#1 冒泡排序 比较相邻两个数 最大值排在第一位
+def bubble_sort(lists):
+    count = len(lists)
+    n = 0  # 标记绘制图的序号
+    for i in range(0,count):
+        for j in range(i+1, count):
+            if lists[i] < lists[j]:
+                temp = lists[i]
+                lists[i] = lists[j]
+                lists[j] = temp
+        n += 1
+        map(lists, n)
+    return lists
+
+#2 选择排序 每次比较所有数中的最大值 最大值排在第一位
+def select_sort(lists):
+    count = len(lists)
+    n = 0 #标记绘制图的序号
+    for i in range(0,count):
+        maxIndex = i
+        for j in range(i+1, count):
+            if lists[maxIndex] < lists[j]:
+                maxIndex = j
+        temp = lists[maxIndex]
+        lists[maxIndex] = lists[i]
+        lists[i] = temp
+        print(lists)
+        n+=1
+        map(lists,n)
+    return lists
+
+#3 快速排序，每次将数据分割为两部分
+def quick_sort(lists,left, right):
+    if left > right:
+        return
+    low = left
+    high = right
+    key = lists[left]
+
+    while low < high:
+        while low < high and lists[high] >= key:
+            high -= 1
+        lists[low] = lists[high]
+        lists[high] = key
+
+        while low < high and lists[low] <= key:
+            low +=1
+        lists[high] = lists[low]
+        lists[low] = key
+    print(lists)
+    quick_sort(lists, left, low - 1)
+    quick_sort(lists, low + 1, right)
+    return lists
+
+
+def quick_sortTwo(lists, start, end):
+    if start > end:
+        return
+    low = start
+    high = end
+    value = lists[low]
+    while low < high:
+        while low <high and lists[high] > value:
+            high -=1
+        lists[low] = lists[high]
+        lists[high] = value
+
+        while low <high and lists[low] <= value:
+            low += 1
+        lists[high] = lists[low]
+        lists[low] = value
+    print(lists)
+    quick_sortTwo(lists,start, low -1)
+    quick_sortTwo(lists,high +1 ,end)
+
+#4 插入排序 每次寻找左侧比当前插入值大的数，找到的话，则该数右移一位  从小到大
+def insert_sort(lists):
+    count = len(lists)
+    for i in range(0,count):
+        value = lists[i]
+        index = i
+        while index > 0 and lists[index - 1] > value:
+            lists[index] = lists[index - 1]
+            index -= 1
+        lists[index] = value
+        print(lists)
+    return lists
+
+#5 希尔排序 将待排序元素分隔为多个子序列（间隔某个增量），分别进行直接插入排序，一次缩减增量，待整个元素基本有序后，再对
+#全体元素进行一次直接插入排序。因为直接插入排序在元素基本有序的情况下，效率是最高的
+def shell_sort(lists):
+    count = len(lists)
+    step = int(count/2)
+    while step > 0:
+        print(lists, step)
+        for i in range(0,count):
+            if i + step < count:
+                if lists[i] > lists[i +step]:
+                    temp = lists[i + step]
+                    lists[i + step] = lists[i]
+                    lists[i] = temp
+        step = int(step/2)
+    else:#再进行一次插入排序
+        for i in range(0, count):
+            value = lists[i]
+            index = i
+            while index > 0 and lists[index - 1] > value:
+                lists[index] = lists[index - 1]
+                index -= 1
+            lists[index] = value
+    return lists
+
+
+#6 归并算法  采用二分法思想，分而治之，将原始数组不停地拆分为左右两份，再从两个有序的子序列中依次对比第一个数，
+#将较小的数放到一个新的结果数组中   从小到大
+
+def merge_middle(lists):
+    if len(lists) == 1:
+        return lists
+    middle = len(lists) // 2
+    left = lists[:middle]
+    right = lists[middle:]
+
+    l = merge_middle(left)
+    r = merge_middle(right)
+    return merge(l,r)
+
+def merge(left, right):
+    result = []
+    while len(left) > 0 and len(right) > 0:
+        if left[0] <= right[0]:
+            result.append(left.pop(0))
+        else:
+            result.append(right.pop(0))
+    result += left
+    result += right
+    return result
+
+#7 堆排序 先进先出 堆是一个完全二叉树，非叶子节点的数据大于或等于其左右孩子节点的数据
+#建立堆，保证根节点的数据最大
+#堆顶元素与最后一个元素进行替换
+def heap_sort(lists):
+    length = len(lists)
+    build_heap(lists,length)
+    for i in range(0,length)[::-1]:
+        lists[0],lists[i] = lists[i],lists[0]
+        adjust_heap(lists,0,i)
+    return lists
+
+def build_heap(lists, length):
+    for i in range(0, (int(length / 2)))[::-1]:
+        adjust_heap(lists,i,length)
+
+def adjust_heap(lists,i,length):
+    lchild = 2*i +1
+    rchild = 2*i +2
+    max = i
+    if i < length /2:
+        if lchild < length and lists[lchild] > lists[max]:
+            max = lchild
+        if rchild < length and lists[rchild] > lists[max]:
+            max = rchild
+        if max != i:
+            lists[max], lists[i] = lists[i], lists[max]
+            adjust_heap(lists,max,length)
+
+
+
+if __name__ == "__main__":
+    lists = [40,20,80,50,30,60]
+    lists = heap_sort(lists)
+    print(lists)
+
