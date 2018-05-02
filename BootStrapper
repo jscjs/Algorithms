@@ -1,0 +1,51 @@
+public class BootStrapper
+{
+ public void Run()
+{
+ InitApp();
+ ShowUI();
+}
+
+private void ShowUI()
+{
+ MainWindow mainWindow = new MainWindow();
+ UIDispatcher.MainDispatcher = mainWindow.Dispatcher;
+ AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_Exception);
+ main.Dispatcher.UnhandledException += new DispatcherUnhandledException(Dispatcher_Exception);
+
+ MainViewModel vm = new MainViewModel();
+ mainWindow.DataContext = vm;
+
+ mainWindow.Show();
+}
+
+ void CurrentDomain_Exception(object sender, UnhandledException e)
+{
+}
+
+ void Dispatcher_Exception(object sender, DispatcherUnhandledException e)
+{
+}
+
+ private void InitApp()
+{
+ SystemConfig.Init();
+ CreateDispatcher();
+}
+
+private void CreateDispatcher()
+{
+ using(ManualResetEvent event = new ManualResetEvent(false))
+{
+ var therad = new Thread(()=>{
+  event.Set();
+  Dispathcher.Run();
+ });
+ thread.SetApartmentState(ApartmentState.STA);
+ thread.IsBackground = true;
+ thread.Start();
+ event.WaitOne();
+}
+ 
+}
+}
