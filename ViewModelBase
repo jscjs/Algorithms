@@ -1,0 +1,75 @@
+public class ViewModelBase : INotifyPropertyChanged, IDataErrorInfo
+    {
+        private readonly Dictionary<string, string> _errors = new Dictionary<string, string>();
+
+        public string Error
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public string this[string propertyName]
+        {
+            get
+            {
+                var result = string.Empty;
+                if (!this._errors.TryGetValue(propertyName, out result))
+                {
+                    result = string.Empty;
+                }
+                return result;
+            }
+        }
+
+        public void SetError(string propertyName, string errorMessage)
+        {
+            this._errors[propertyName] = errorMessage;
+            this.OnPropertyChanged(propertyName);
+        }
+
+        public void ClearError(string propertyName)
+        {
+            this._errors.Remove(propertyName);
+            this.OnPropertyChanged(propertyName);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = this.PropertyChanged;
+            if (handler != null)
+            {
+                PropertyChangedEventArgs e = new PropertyChangedEventArgs(propertyName);
+                handler(this, e);
+            }
+        }
+
+        /// <summary>
+        /// 在Property中不需要指定property name来触发PropertyChanged event
+        /// 注意: 避免在Get或者很短的Set中使用，因为dotnet会在Release编译模式下优化代码为inline, 导致无法通过call stack获得方法名称
+        /// 可以在caller方法或者property上使用System.Runtime.CompilerServices.MethodImpl(MethodImplOptions.NoInlining)或者定义成virtual来解决
+        /// </summary>
+        protected virtual void OnPropertyChanged()
+        {
+            string propertyName = GetProperyName(new StackTrace(true).GetFrame(1).GetMethod().Name);
+            PropertyChangedEventHandler handler = this.PropertyChanged;
+            if (handler != null)
+            {
+                PropertyChangedEventArgs e = new PropertyChangedEventArgs(propertyName);
+                handler(this, e);
+            }
+        }
+
+        private static string GetProperyName(string methodName)
+        {
+            if (methodName.StartsWith("get_") || methodName.StartsWith("set_") ||
+                methodName.StartsWith("put_"))
+            {
+                return methodName.Substring("get_".Length);
+            }
+            throw new ArgumentException(methodName + " not a method of Property", "methodName");
+        }
+    }
