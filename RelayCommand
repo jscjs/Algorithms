@@ -1,0 +1,134 @@
+[ExcludeFromCodeCoverage]
+    public class RelayCommand : ICommand
+    {
+        #region Fields
+
+        private readonly Action<object> _execute;
+        private readonly Predicate<object> _canExecute;
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the RelayCommand class.
+        /// </summary>
+        /// <param name="execute">The execution logic.</param>
+        public RelayCommand(Action<object> execute)
+            : this(execute, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the RelayCommand class.
+        /// </summary>
+        /// <param name="execute">The execution logic.</param>
+        /// <param name="canExecute">The execution status logic.</param>
+        public RelayCommand(Action<object> execute, Predicate<object> canExecute)
+        {
+            if (execute == null)
+            {
+                throw new ArgumentNullException("execute");
+            }
+
+            this._execute = execute;
+            this._canExecute = canExecute;
+        }
+
+        #endregion
+
+        #region ICommand Members
+
+        /// <summary>
+        /// Use CommandManager.InvalidateRequerySuggested() to raise event.
+        /// When command manager thinks the canexecute might change(e.g. focus changed), it raises RequerySuggested event.
+        /// The CanExecuteChanged is automatically registered by command binding, the execution logic of updating the button's
+        /// enabled\disabled state(value below) which is usually executed when CanExecuteChanged triggered, now is delegated to
+        /// RequerySuggested event, so when RequerySuggested triggered, the execution logic is being executed, and button's state gets updated.
+        /// </summary>
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
+
+        public void RaiseCanExecuteChanged()
+        {
+            // CommandManager.InvalidateRequerySuggested()必须在dispatcher上执行
+            // 实现代码中会使用当前dispatcher.BeginInvoke(), 所以不会立即生效
+            var dispatcher = Application.Current == null ? null : Application.Current.Dispatcher;
+            if (dispatcher != null)
+            {
+                dispatcher.BeginInvoke(new Action(() => CommandManager.InvalidateRequerySuggested()));
+            }
+        }
+
+        public void Execute(object parameter)
+        {
+            this._execute(parameter);
+        }
+
+        public bool CanExecute(object parameter)
+        {
+            return this._canExecute == null ? true : this._canExecute(parameter);
+        }
+
+        #endregion
+    }
+
+    [ExcludeFromCodeCoverage]
+    public class RelayCommand<T> : ICommand
+    {
+        #region Fields
+
+        private readonly Action<T> _execute = null;
+        private readonly Predicate<T> _canExecute = null;
+
+        #endregion // Fields
+
+        #region Constructors
+
+        public RelayCommand(Action<T> execute)
+            : this(execute, null)
+        {
+
+        }
+
+        public RelayCommand(Action<T> execute, Predicate<T> canExecute)
+        {
+            if (execute == null)
+                throw new ArgumentNullException("execute");
+
+            this._execute = execute;
+            this._canExecute = canExecute;
+        }
+
+        #endregion // Constructors
+
+        #region ICommand Members
+
+        public bool CanExecute(object parameter)
+        {
+            return _canExecute == null ? true : _canExecute((T)parameter);
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add
+            {
+                CommandManager.RequerySuggested += value;
+            }
+
+            remove
+            {
+                CommandManager.RequerySuggested -= value;
+            }
+        }
+
+        public void Execute(object parameter)
+        {
+            _execute((T)parameter);
+        }
+
+        #endregion
+    }
