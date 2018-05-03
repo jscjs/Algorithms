@@ -1,0 +1,274 @@
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
+  <xsl:template match="/">
+    <html>
+      <head>
+        <style type="text/css">
+          body,div,span{margin:0px;padding:0px;}
+          body{width:1000px;border:none;}
+          #MI_DailyService_Report_Config_Header{position:relative;width:100%;padding-top:50px;font-size:10.5pt;color:#999;font-family:微软雅黑, Arial}
+          #MI_DailyService_Report_Config_Title{position:relative;width: 100%;height:30px;padding-top:85px;text-align:center;font-size:22pt;color:#000;font-weight: bold;font-family:Arial}
+          #MI_DailyService_Report_Config_Info{position:relative;width: 100%;height:30px;padding-top:35px;font-size:10.5pt;color:#333;}
+          .Info_Page{background:#EFF4F4;height:25px;margin-top:28px;margin-bottom:10px;padding-top:8px;font-size:10.5pt;font-weight:bold;}
+          .Info_Page_Section_Subsection{width:100%;padding-top:2px;margin-top:-1px;border-collapse:collapse;border-top:1px solid #B7CCCC;border-bottom:1px solid #B7CCCC;}
+          .Info_Page_Section_Subsection tr{height:28px; line-height:28px;}
+          #MI_DailyService_Report_Content_CheckItems{position:relative;width:100%;padding-top:2px;margin-top:-1px;}
+          .Content_Page_Section_Subsection{width:100%;padding-top:20px;margin-top:10px;border-collapse:collapse;border-top:10px solid #B7CCCC;border-bottom:1px solid #B7CCCC;}
+          .Content_Page_Section_Subsection tr{height:28px; line-height:28px;}
+
+          #MI_DailyService_Report_Config_Content{position:relative;width: 100%;height:30px;padding-top:15px;padding-down:15px;font-size:10.5pt;color:#333;}
+          .Content_Title_Page{background:#EFF4F4;height:25px;margin-top:28px;padding-top:8px;font-size:10.5pt;font-weight:bold;}
+          .Content_Title_Page_Section_Subsection{width:100%;table-layout:fixed;padding-top:2px;margin-top:10px;margin-bottom:10px;border-collapse:collapse;border-top:1px solid #B7CCCC;border-bottom:1px solid #B7CCCC;}
+          .Content_Title_Page_Section_Subsection tr{height:28px; line-height:28px;}
+          .Content_Page_Section_Subsection{width:100%;table-layout:fixed;margin-top:-1px;border-collapse:collapse;border-top:1px solid #B7CCCC;border-bottom:1px solid #B7CCCC;}
+          .Content_Page_Section_Subsection tr{height:28px; line-height:28px;}
+          #MI_DailyService_Report_Config_Pic{position:relative;width: 100%;height:30px;padding-top:15px;font-size:10.5pt;color:#333;}
+          .Pic_Page{background:#EFF4F4;height:25px;margin-top:28px; padding-top:8px;font-size:10.5pt;font-weight:bold;}
+          .Pic_Next_Page{page-break-before:always;background:#EFF4F4;height:25px;margin-top:28px; padding-top:8px;font-size:10.5pt;font-weight:bold;}
+          #MI_DailyService_Report_Config_Sign{position:relative;padding-top:200px;font-size:10.5pt;color:#999;font-family:微软雅黑, Arial;float:right;width:50%}
+          #MI_DailyService_Report_Config_Sign table{text-align:right;border-collapse:collapse;border:1px solid #DBDBDB;width:100%;height:120px;}
+          #MI_DailyService_Report_Config_Sign table tr td{border-right:1px solid #DBDBDB;padding-right:10px;font-size:10.5pt;color:#999;font-family:微软雅黑, Arial}
+          .Pic_Interval{margin-bottom:40px; margin-top:20px}
+        </style>
+      </head>
+      <body>
+        <div id = 'MI_DailyService_Report_Config_Header'>
+          <div style = "float:left;">
+            <span>上海联影医疗科技有限公司</span>
+            <br/>
+            <span>Shanghai United Imaging Healthcare Co., Ltd.</span>
+            <br/>
+            <span>www.united-imaging.com</span>
+          </div>
+          <div style = "float:right;">
+            <xsl:for-each select="titles/Logo">
+              <img src="{@name}" width="160px" height="32px" border="0" alt="Logo"/>
+            </xsl:for-each>
+          </div>
+        </div>
+        <div id = 'MI_DailyService_Report_Config_Title'>
+          <xsl:for-each select="titles/mainTitle">
+            <span>
+              <xsl:value-of select="@name"/>
+            </span>
+          </xsl:for-each>
+        </div>
+        <div id = "MI_DailyService_Report_Config_Info">
+          <!--医疗机构、序列号、检测总的结果等信息-->
+          <xsl:for-each select="titles/info">
+            <div class = "Info_Page">
+              <xsl:value-of select="@name"/>
+            </div>
+            <div>
+              <xsl:for-each select="item">
+                <table class = "Info_Page_Section_Subsection">
+                  <tr>
+                    <td style = "text-align:right;width:100px;border-right:1px solid #B7CCCC;padding-right:10px;">
+                      <xsl:value-of select="@name"/>
+                    </td>
+                    <xsl:choose>
+                      <xsl:when test="./@color = 'red'">
+                        <td style = "text-align:left;color:#FF0000;padding-left:10px;width:200px;">
+                          <xsl:value-of select="@result"/>
+                        </td>
+                      </xsl:when>
+                      <xsl:when test="./@color = 'green'">
+                        <td style = "text-align:left;color:#009612;padding-left:10px;width:200px;">
+                          <xsl:value-of select="@result"/>
+                        </td>
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <td style = "text-align:left;padding-left:10px;width:200px;">
+                          <xsl:value-of select="@result"/>
+                        </td>
+                      </xsl:otherwise>
+                    </xsl:choose>
+                  </tr>
+                </table>
+              </xsl:for-each>
+            </div>
+          </xsl:for-each>
+          <div >
+            <xsl:for-each select="titles/content">
+              <!--检测内容标题栏-->
+              <div class = "Info_Page">
+                <xsl:value-of select="@name"/>
+              </div>
+
+              <div>
+                <table border="1" border-color ="#B7CCCC" style="border-collapse:collapse; ">
+                  <!--检测项名称-->
+                  <xsl:for-each select="detectionItems">
+                    <tr>
+                      <td style = "text-align:center;border-top:1px solid #B7CCCC;border-left:1px solid #B7CCCC;" colspan ='2'>
+                        <xsl:value-of select="@name"/>
+                      </td>
+                      <td style = "text-align:center;border-top:1px solid #B7CCCC;border-left:1px solid #B7CCCC;" colspan ='2'>
+                        <xsl:value-of select="@Voltage"/>
+                      </td>
+                      <td style = "text-align:center;border-top:1px solid #B7CCCC;border-left:1px solid #B7CCCC;width:170px">
+                        <xsl:value-of select="@CountRate"/>
+                      </td>
+                      <td style = "text-align:center;border-top:1px solid #B7CCCC;border-left:1px solid #B7CCCC;width:170px">
+                        <xsl:value-of select="@Temperature"/>
+                      </td>
+                      <td style = "text-align:center;border-top:1px solid #B7CCCC;border-left:1px solid #B7CCCC;border-right:1px solid #B7CCCC;width:170px">
+                        <xsl:value-of select="@Humidity"/>
+                      </td>
+                    </tr>
+                  </xsl:for-each>
+                  <!--正常范围-->
+                  <xsl:for-each select="normalRange">
+                    <tr>
+                      <td style = "text-align:center;border-top:1px solid #B7CCCC;border-left:1px solid #B7CCCC;" colspan ='2'>
+                        <xsl:value-of select="@name"/>
+                      </td>
+                      <td style = "text-align:center;border-top:1px solid #B7CCCC;border-left:1px solid #B7CCCC;width:170px">
+                        <xsl:value-of select="@Voltage0"/>
+                      </td>
+                      <td style = "text-align:center;border-top:1px solid #B7CCCC;border-left:1px solid #B7CCCC;width:170px">
+                        <xsl:value-of select="@Voltage1"/>
+                      </td>
+                      <td style = "text-align:center;border-top:1px solid #B7CCCC;border-left:1px solid #B7CCCC;width:170px">
+                        <xsl:value-of select="@CountRate"/>
+                      </td>
+                      <td style = "text-align:center;border-top:1px solid #B7CCCC;border-left:1px solid #B7CCCC;width:170px">
+                        <xsl:value-of select="@Temperature"/>
+                      </td>
+                      <td style = "text-align:center;border-top:1px solid #B7CCCC;border-left:1px solid #B7CCCC;border-right:1px solid #B7CCCC;width:170px">
+                        <xsl:value-of select="@Humidity"/>
+                      </td>
+                    </tr>
+                  </xsl:for-each>
+                  <!--8个Unit-->
+                  <xsl:for-each select="item">
+                    <tr>
+                      <td style = "width:70px;text-align:center;border:1px solid #B7CCCC;" rowspan ='2'>
+                        <xsl:value-of select="@name"/>
+                      </td>
+                      <xsl:for-each select="result">
+                        <td style = "width:70px;text-align:center;border:1px solid #B7CCCC;">
+                          <xsl:value-of select="@name"/>
+                        </td>
+                        <xsl:for-each select="item">
+                          <xsl:choose>
+                            <xsl:when test="@name = 'Humidity'">
+                                <xsl:if test="@color = 'red'">
+                                  <td style = "width:170px;color:#FF0000;text-align:center;border:1px solid #B7CCCC;">
+                                    <xsl:value-of select="@value"/>
+                                  </td>
+                                </xsl:if>
+                                <xsl:if test="@color = 'green'">
+                                <td style = "width:170px;text-align:center;border:1px solid #B7CCCC;">
+                                  <xsl:value-of select="@value"/>
+                                </td>
+                                </xsl:if>
+                                <xsl:if test="@color = 'yellow'">
+                                  <td style = "width:170px;color:#FF8A00;text-align:center;border:1px solid #B7CCCC;">
+                                    <xsl:value-of select="@value"/>
+                                  </td>
+                                </xsl:if>
+                              </xsl:when>
+                            <xsl:otherwise>
+                              <xsl:if test="@color = 'red'">
+                                <td style = "width:170px;color:#FF0000;text-align:center;border:1px solid #B7CCCC;">
+                                  <xsl:value-of select="@value"/>
+                                </td>
+                              </xsl:if>
+                              <xsl:if test="@color = 'yellow'">
+                                <td style = "width:170px;color:#FF8A00;text-align:center;border:1px solid #B7CCCC;">
+                                  <xsl:value-of select="@value"/>
+                                </td>
+                              </xsl:if>
+                              <xsl:if test="@color = 'green'">
+                                <td style = "width:170px;text-align:center;border:1px solid #B7CCCC;">
+                                  <xsl:value-of select="@value"/>
+                                </td>
+                              </xsl:if>
+                            </xsl:otherwise>
+                          </xsl:choose>
+                        </xsl:for-each>
+                      </xsl:for-each>
+                    </tr>
+                    <tr>
+                      <xsl:for-each select="detail">
+                        <td style = "width:70px;text-align:center;border:1px solid #B7CCCC;">
+                          <xsl:value-of select="@name"/>
+                        </td>
+                        <td colspan='5' style = "width:850px;text-align:center;border:1px solid #B7CCCC;">
+                          <table >
+                            <xsl:for-each select="item">
+                              <tr >
+                                <td style = "text-align:left;width:850px;">
+                                  <xsl:value-of select="@value"/>
+                                </td>
+                              </tr>
+                            </xsl:for-each>
+                          </table>
+                        </td>
+                      </xsl:for-each>
+                    </tr>
+                  </xsl:for-each>
+                </table>
+              </div>
+            </xsl:for-each>
+            
+            
+            <!--交叉符合表-->
+            <xsl:for-each select="titles/crossCountRateMap">
+              <div class = "Info_Page">
+                <xsl:value-of select="@name"/>
+              </div>
+              <div align="center" class="Pic_Interval">
+                <img src="{@adr}" width="{@width}" height="{@height}" border="0"  />
+              </div>
+            </xsl:for-each>
+            
+            <!--签名-->
+            <div id="MI_DailyService_Report_Config_Pic">
+              <xsl:for-each select="titles/analysis">
+                <div class="Content_Title_Page">
+                  <xsl:value-of select="@name"/>
+                </div>
+                <xsl:for-each select="pic">
+                  <xsl:choose>
+                    <xsl:when test="./@name = 'PMT'">
+                      <div align="center" class="Pic_Interval">
+                        <img src="{@adr}" width="{@width}" height="{@height}" border="0" alt="{@alt}" />
+                      </div>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <div align="center" class="Pic_Interval">
+                        <img src="{@adr}" width="{@width}" height="{@height}" border="0" alt="{@alt}" />
+                      </div>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:for-each>
+              </xsl:for-each>
+              <div id = "MI_DailyService_Report_Config_Sign">
+                <xsl:for-each select="titles/signTitle">
+                  <span>
+                    <xsl:value-of select="@name"/>
+                  </span>
+                </xsl:for-each>
+                <br/>
+                <xsl:for-each select="titles/signTitle/item">
+                  <table>
+                    <tr>
+                      <td style ="vertical-align: top;">
+                        <xsl:value-of select="@name"/>
+                      </td>
+                      <td style ="vertical-align: bottom;">
+                        <xsl:value-of select="@dateFormat"/>
+                      </td>
+                    </tr>
+                  </table>
+                </xsl:for-each>
+              </div>
+            </div>
+          </div>
+        </div>
+      </body>
+    </html>
+  </xsl:template>
+</xsl:stylesheet>
